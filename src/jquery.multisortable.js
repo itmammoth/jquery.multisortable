@@ -53,7 +53,7 @@
 			else {
 				parent.find('.multiselectable-shift').removeClass('multiselectable-shift');
 			}
-			
+
 			if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
 				// no - selection is global, not local
 				// parent.find('.multiselectable-previous').removeClass('multiselectable-previous');
@@ -97,9 +97,11 @@
 			var list = $(this);
 
 			if (!list.data('multiselectable')) {
+			    var clickable = options.cancel ? options.items + ':not("' + options.cancel + '")' : options.items;
+			    var clickable = options.cancel ? options.items + ':not("' + options.cancel + '")' : options.items;
 				list.data('multiselectable', true)
-					.delegate(options.selectableItems, 'mousedown', mouseDown)
-					.delegate(options.selectableItems, 'click', click)
+					.delegate(clickable, 'mousedown', mouseDown)
+					.delegate(clickable, 'click', click)
 					.disableSelection();
 			}
 		})
@@ -109,7 +111,8 @@
 		click: function(event, elem) {},
 		mousedown: function(event, elem) {},
 		selectedClass: 'selected',
-		selectableItems: 'li'
+		items: 'li',
+		cancel: '',
 	};
 
 
@@ -160,12 +163,13 @@
 			list.multiselectable({
 				selectedClass: settings.selectedClass,
 				click: settings.click,
-				selectableItems: settings.selectableItems,
+				items: settings.items,
+				cancel: settings.cancel,
 				mousedown: settings.mousedown
 			});
 
 			//enable sorting
-			options.cancel = settings.selectableItems + ':not(.' + settings.selectedClass + ')';
+			options.cancel = settings.items + ':not(.' + settings.selectedClass + ')';
 			options.placeholder = settings.placeholder;
 			options.start = function(event, ui) {
 				if (ui.item.hasClass(settings.selectedClass)) {
@@ -183,12 +187,12 @@
 
 				settings.start(event, ui);
 			};
-			
+
 			options.beforeStop = function(event, ui) {
 				settings.beforeStop.call(this, event, ui);
 				regroup(ui.item, ui.item.parent());
 			};
-			
+
 			options.stop = function(event, ui) {
 				regroup(ui.item, ui.item.parent());
 				settings.stop(event, ui);
@@ -256,7 +260,7 @@
 		selectedClass: 'selected',
 		placeholder: 'placeholder',
 		items: 'li',
-		selectableItems: 'li',
+		cancel: '',
 	};
 
 }(jQuery);
