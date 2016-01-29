@@ -102,8 +102,8 @@
 
 			if (!list.data('multiselectable')) {
 				list.data('multiselectable', true)
-					.delegate(options.items, 'mousedown', mouseDown)
-					.delegate(options.items, 'click', click)
+					.delegate(options.selectableItems, 'mousedown', mouseDown)
+					.delegate(options.selectableItems, 'click', click)
 					.disableSelection();
 			}
 		})
@@ -113,7 +113,7 @@
 		click: function(event, elem) {},
 		mousedown: function(event, elem) {},
 		selectedClass: 'selected',
-		items: 'li'
+		selectableItems: 'li'
 	};
 
 
@@ -164,12 +164,12 @@
 			list.multiselectable({
 				selectedClass: settings.selectedClass,
 				click: settings.click,
-				items: settings.items,
+				selectableItems: settings.selectableItems,
 				mousedown: settings.mousedown
 			});
 
 			//enable sorting
-			options.cancel = settings.items + ':not(.' + settings.selectedClass + ')';
+			options.cancel = settings.selectableItems + ':not(.' + settings.selectedClass + ')';
 			options.placeholder = settings.placeholder;
 			options.start = function(event, ui) {
 				if (ui.item.hasClass(settings.selectedClass)) {
@@ -259,7 +259,8 @@
 		mousedown: function(event, elem) {},
 		selectedClass: 'selected',
 		placeholder: 'placeholder',
-		items: 'li'
+		items: 'li',
+		selectableItems: 'li',
 	};
 
 }(jQuery);
