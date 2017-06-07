@@ -113,7 +113,7 @@
 
 
 	$.fn.multisortable = function(options) {
-        options = options || {};
+		options = options || {};
 		var settings = $.extend({}, $.fn.multisortable.defaults, options);
 
         // fix to keep compatibility using prototype.js and jquery together
@@ -302,10 +302,12 @@
         });
 	};
 
-    var sum = function(iter, func) {
-    	return _.reduce(iter, function(memo, el) {
-    		return memo + func(el);
-		}, 0);
+    var sum = function(jq, func) {
+        var memo = 0;
+    	jq.each(function(i, el) {
+    		memo += func(el);
+		});
+    	return memo;
 	};
 
 	$.fn.multisortable.defaults = {
