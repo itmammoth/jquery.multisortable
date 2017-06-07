@@ -115,6 +115,9 @@
 	$.fn.multisortable = function(options) {
 		var settings = $.extend({}, $.fn.multisortable.defaults, options || {});
 
+        // fix to keep compatibility using prototype.js and jquery together
+        $.fn.reverse = Array.prototype._reverse || Array.prototype.reverse;
+
 		function regroup(item, list) {
 			if (list.find('.' + settings.selectedClass).length > 0) {
 				var myIndex = item.data('i');
@@ -174,8 +177,20 @@
 					});
 
 					// adjust placeholder size to be size of items
-					var height = parent.find('.' + settings.selectedClass).length * ui.item.outerHeight();
-					ui.placeholder.height(height);
+                    switch (settings.orientation) {
+                        case 'vertical':
+                            var height = sum(parent.find('.' + settings.selectedClass), function(el) {
+                            	return $(el).outerHeight();
+							});
+                            ui.placeholder.height(height);
+                            break;
+                        case 'horizontal':
+                            var width = sum(parent.find('.' + settings.selectedClass), function(el) {
+                                return $(el).outerWidth();
+                            });
+                            ui.placeholder.width(width);
+                            break;
+                    }
 				}
 
 				settings.start(event, ui);
@@ -194,41 +209,23 @@
 			options.sort = function(event, ui) {
 				var parent = ui.item.parent(),
 					myIndex = ui.item.data('i'),
-					top = parseInt(ui.item.css('top').replace('px', '')),
-					left = parseInt(ui.item.css('left').replace('px', ''));
+					selectedItems = $('.' + settings.selectedClass, parent);
 
-				// fix to keep compatibility using prototype.js and jquery together
-				$.fn.reverse = Array.prototype._reverse || Array.prototype.reverse;
+                var prevItems = selectedItems.filter(function() {
+                    return $(this).data('i') < myIndex;
+                });
+                var followingItems = selectedItems.filter(function() {
+                    return $(this).data('i') > myIndex;
+                });
 
-				var height = 0;
-				$('.' + settings.selectedClass, parent).filter(function() {
-					return $(this).data('i') < myIndex;
-				}).reverse().each(function() {
-						height += $(this).outerHeight();
-						$(this).css({
-							left: left,
-							top: top - height,
-							position: 'absolute',
-							zIndex: 1000,
-							width: ui.item.width()
-						})
-					});
-
-				height = ui.item.outerHeight();
-				$('.' + settings.selectedClass, parent).filter(function() {
-					return $(this).data('i') > myIndex;
-				}).each(function() {
-						var item = $(this);
-						item.css({
-							left: left,
-							top: top + height,
-							position: 'absolute',
-							zIndex: 1000,
-							width: ui.item.width()
-						});
-
-						height += item.outerHeight();
-					});
+                switch (settings.orientation) {
+					case 'vertical':
+                        sortVertical(ui.item, prevItems, followingItems);
+                        break;
+                    case 'horizontal':
+                        sortHorizontal(ui.item, prevItems, followingItems);
+                        break;
+				}
 
 				settings.sort(event, ui);
 			};
@@ -239,7 +236,75 @@
 			};
 
 			list.sortable(options).disableSelection();
-		})
+		});
+	};
+
+	var sortVertical = function(uiItem, prevItems, followingItems) {
+        var top = uiItem.position().top,
+            left = uiItem.position().left,
+			height = 0;
+
+        prevItems.reverse().each(function() {
+        	var item = $(this);
+            height += item.outerHeight();
+            item.css({
+                left: left,
+                top: top - height,
+                position: 'absolute',
+                zIndex: 1000,
+                width: item.width()
+            });
+        });
+
+        height = uiItem.outerHeight();
+        followingItems.each(function() {
+            var item = $(this);
+            item.css({
+                left: left,
+                top: top + height,
+                position: 'absolute',
+                zIndex: 1000,
+                width: item.width()
+            });
+            height += item.outerHeight();
+        });
+	};
+
+    var sortHorizontal = function(uiItem, prevItems, followingItems) {
+        var top = uiItem.position().top,
+            left = uiItem.position().left,
+            width = 0;
+
+        prevItems.reverse().each(function() {
+        	var item = $(this);
+            width += item.outerWidth();
+            item.css({
+                left: left - width,
+                top: top,
+                position: 'absolute',
+                zIndex: 1000,
+                width: item.width()
+            });
+        });
+
+        width = uiItem.outerWidth();
+        followingItems.each(function() {
+            var item = $(this);
+            item.css({
+                left: left + width,
+                top: top,
+                position: 'absolute',
+                zIndex: 1000,
+                width: item.width()
+            });
+            width += item.outerWidth();
+        });
+	};
+
+    var sum = function(iter, func) {
+    	return _.reduce(iter, function(memo, el) {
+    		return memo + func(el);
+		}, 0);
 	};
 
 	$.fn.multisortable.defaults = {
@@ -254,6 +319,7 @@
 		placeholder: 'placeholder',
 		items: 'li',
 		cancel: '',
+		orientation: 'vertical',
 	};
 
 }(jQuery);
