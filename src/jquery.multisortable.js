@@ -6,10 +6,7 @@
 !function($) {
 
 	$.fn.multiselectable = function(options) {
-		if (!options) {
-			options = {}
-		}
-		options = $.extend({}, $.fn.multiselectable.defaults, options);
+		options = $.extend({}, $.fn.multiselectable.defaults, options || {});
 
 		function mouseDown(e) {
 			var item = $(this),
@@ -98,7 +95,6 @@
 
 			if (!list.data('multiselectable')) {
 			    var clickable = options.cancel ? options.items + ':not("' + options.cancel + '")' : options.items;
-			    var clickable = options.cancel ? options.items + ':not("' + options.cancel + '")' : options.items;
 				list.data('multiselectable', true)
 					.delegate(clickable, 'mousedown', mouseDown)
 					.delegate(clickable, 'click', click)
@@ -117,10 +113,7 @@
 
 
 	$.fn.multisortable = function(options) {
-		if (!options) {
-			options = {}
-		}
-		var settings = $.extend({}, $.fn.multisortable.defaults, options);
+		var settings = $.extend({}, $.fn.multisortable.defaults, options || {});
 
 		function regroup(item, list) {
 			if (list.find('.' + settings.selectedClass).length > 0) {
@@ -205,7 +198,7 @@
 					left = parseInt(ui.item.css('left').replace('px', ''));
 
 				// fix to keep compatibility using prototype.js and jquery together
-				$.fn.reverse = Array.prototype._reverse || Array.prototype.reverse
+				$.fn.reverse = Array.prototype._reverse || Array.prototype.reverse;
 
 				var height = 0;
 				$('.' + settings.selectedClass, parent).filter(function() {
