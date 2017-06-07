@@ -113,7 +113,8 @@
 
 
 	$.fn.multisortable = function(options) {
-		var settings = $.extend({}, $.fn.multisortable.defaults, options || {});
+        options = options || {};
+		var settings = $.extend({}, $.fn.multisortable.defaults, options);
 
         // fix to keep compatibility using prototype.js and jquery together
         $.fn.reverse = Array.prototype._reverse || Array.prototype.reverse;
