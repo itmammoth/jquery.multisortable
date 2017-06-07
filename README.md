@@ -16,8 +16,9 @@ $('ul').multisortable();
 $('div.container').multisortable({
 	items: "div.item",
 	selectedClass: "selected",
-	click: function(e){ console.log("I'm selected."); }
-	stop: function(e){ console.log("I've been sorted."); }
+	click: function(e){ console.log("I'm selected."); },
+	stop: function(e){ console.log("I've been sorted."); },
+	orientation: 'vertical',
 });
 ```
 
@@ -28,6 +29,7 @@ This plugin provides several new options and events:
 #### Options
 
 * **selectedClass**: class which will be assigned to selected items.
+* **orientation**: orientation on arranging helper items. `'vertical'` or `'horizontal'` (default `'vertical'` )
 
 #### Events
 
